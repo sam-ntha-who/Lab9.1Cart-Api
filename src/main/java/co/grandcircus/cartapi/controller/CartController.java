@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,22 +73,58 @@ public class CartController {
 		
 		return "Data reset.";
 	}
+	// C(R)UD get all items - works - 
 	@GetMapping("/cart-items")
 	public List<CartItems> getCartItems() {
 		// response json array of all cart items
 		return itemRepo.findAll();
 		
 	}
-	
-	@GetMapping("/cart-items/{id}")
+	// C(R)UD
+	@GetMapping("/cart-items/{id}") 
 	public CartItems getOne(@PathVariable("id") String id) {
 		return itemRepo.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
  	}
 	
+	// (C)RUD add an item - works 
 	@PostMapping("/cart-items")
 	@ResponseStatus(HttpStatus.CREATED)
 	public CartItems create(@RequestBody CartItems item) {
 		itemRepo.insert(item);
 		return item;
+	}
+	// CR(U)D update an item
+	@PutMapping("/cart-items/{id}")
+	public CartItems updateItem(@PathVariable("id")String id, @RequestBody CartItems item) {
+//		item.setId(id);
+		return itemRepo.save(item);
+	}
+	
+	// CRU(D) delete an item - works
+	@DeleteMapping("/cart-items/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable("id") String id) {
+		itemRepo.deleteById(id);
+	}
+	
+	// get total cost of items - works
+	@GetMapping("/cart-items/total-cost")
+	public double getTotal() {
+		List<CartItems> cartItems = itemRepo.findAll();
+		double total = 0;
+		
+		for (CartItems item : cartItems) {
+			total += item.getPrice() * item.getQuantity();
+		}
+		
+		return total * 1.06;
+	
+	}
+	@PatchMapping("/cart-items/{id}/add")
+	public CartItems updateQuantity(@PathVariable("id") String id, @RequestParam Integer amount) {
+		CartItems update = itemRepo.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
+		update.setQuantity(update.getQuantity() + amount);
+		itemRepo.save(update);
+		return update;
 	}
 }
