@@ -73,14 +73,16 @@ public class CartController {
 		
 		return "Data reset.";
 	}
-	// C(R)UD get all items - works - 
+	// C(R)UD get all items - works
+	// need to add query string params (product/maxPrice/prefix/pageSize)
 	@GetMapping("/cart-items")
 	public List<CartItems> getCartItems() {
 		// response json array of all cart items
 		return itemRepo.findAll();
 		
 	}
-	// C(R)UD
+	// C(R)UD - works
+	// incl exception
 	@GetMapping("/cart-items/{id}") 
 	public CartItems getOne(@PathVariable("id") String id) {
 		return itemRepo.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
@@ -93,10 +95,9 @@ public class CartController {
 		itemRepo.insert(item);
 		return item;
 	}
-	// CR(U)D update an item
+	// CR(U)D update an item - works
 	@PutMapping("/cart-items/{id}")
 	public CartItems updateItem(@PathVariable("id")String id, @RequestBody CartItems item) {
-//		item.setId(id);
 		return itemRepo.save(item);
 	}
 	
@@ -120,6 +121,7 @@ public class CartController {
 		return total * 1.06;
 	
 	}
+	// query params added - works
 	@PatchMapping("/cart-items/{id}/add")
 	public CartItems updateQuantity(@PathVariable("id") String id, @RequestParam Integer amount) {
 		CartItems update = itemRepo.findById(id).orElseThrow(() -> new ItemNotFoundException(id));
