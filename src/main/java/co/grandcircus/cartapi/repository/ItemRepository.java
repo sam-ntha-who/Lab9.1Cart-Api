@@ -9,5 +9,6 @@ import co.grandcircus.cartapi.models.CartItems;
 
 public interface ItemRepository extends MongoRepository<CartItems, String> {
 	List<CartItems> findAll();
+
 	Optional<CartItems> findById(String id);
 }
