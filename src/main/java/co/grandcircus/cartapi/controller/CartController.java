@@ -29,43 +29,43 @@ public class CartController {
 		itemRepo.deleteAll();
 
 		// Add items
-		CartItems items = new CartItems("Quick Oats", 3.29, 2);
+		CartItems items = new CartItems("quick oats", 3.29, 2);
 		itemRepo.insert(items);
 
-		items = new CartItems("Oat Milk", 2.89, 2);
+		items = new CartItems("oat milk", 2.89, 2);
 		itemRepo.insert(items);
 
-		items = new CartItems("X-Large Eggs", 3.59, 1);
+		items = new CartItems("eggs", 3.59, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("Yellow Mustard", 1.58, 1);
+		items = new CartItems("yellow mustard", 1.58, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("Peanut Butter", 3.45, 3);
+		items = new CartItems("peanut butter", 3.45, 3);
 		itemRepo.insert(items);
 
-		items = new CartItems("Chocolate Protein Powder", 23.99, 1);
+		items = new CartItems("chocolate protein powder", 23.99, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("Manzanilla Olives", 2.29, 3);
+		items = new CartItems("manzanilla olives", 2.29, 3);
 		itemRepo.insert(items);
 
-		items = new CartItems("Classic Roast Ground Coffee", 6.79, 2);
+		items = new CartItems("classic roast ground coffee", 6.79, 2);
 		itemRepo.insert(items);
 
-		items = new CartItems("Egyptian Licorice Herbal Tea", 4.29, 3);
+		items = new CartItems("egyptian licorice herbal tea", 4.29, 3);
 		itemRepo.insert(items);
 
-		items = new CartItems("Ground Pepper", 1.89, 1);
+		items = new CartItems("ground pepper", 1.89, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("Turkey Hot Dogs", 2.39, 1);
+		items = new CartItems("turkey hot dogs", 2.39, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("BBQ Sauce", 1.59, 1);
+		items = new CartItems("bbq sauce", 1.59, 1);
 		itemRepo.insert(items);
 
-		items = new CartItems("Brown Sugar", 1.39, 1);
+		items = new CartItems("brown sugar", 1.39, 1);
 		itemRepo.insert(items);
 
 		return "Data reset.";
@@ -73,11 +73,36 @@ public class CartController {
 
 	// C(R)UD get all items - works
 	// need to add query string params (product/maxPrice/prefix/pageSize)
+	
 	@GetMapping("/cart-items")
-	public List<CartItems> getCartItems() {
+	public List<CartItems> getCartItems(@RequestParam(required = false) String product, @RequestParam(required = false) Double maxPrice, @RequestParam(required = false) String prefix, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String search) {
 		// response json array of all cart items
-		return itemRepo.findAll();
-
+	
+			// search for product matching exact name - works
+			if (product != null) {
+				product.equalsIgnoreCase(product);
+				return itemRepo.findByProduct(product);
+			// search for product by maxPrice - works
+			} else if (maxPrice != null) {
+				return itemRepo.findByPriceLessThan(maxPrice);
+			// search for product by prefix - works
+			} else if (prefix != null) {
+				prefix.equalsIgnoreCase(prefix);
+				return itemRepo.findByProductStartingWith(prefix);	
+			// search for products by page size - works
+			} else if ((pageSize != null) && (itemRepo.findAll().size() > pageSize)) {
+				return itemRepo.findAll().subList(0, pageSize);
+			// search for products containing string search - works
+			} else if (search != null) {
+				search.equalsIgnoreCase(search);
+				return itemRepo.findByProductContaining(search);
+			// if nothing searched, return all items - works
+			} else {
+				return itemRepo.findAll();
+			}
+		 
+		
+		
 	}
 
 	// C(R)UD - works

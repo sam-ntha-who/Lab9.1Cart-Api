@@ -9,7 +9,7 @@ public class CartItems {
 	@Id
 	public String id;
 	private String product;
-	// mongo requires big D double
+	// mongo requires objects not primitives
 	private Double price;
 	private Integer quantity;
 
